@@ -1,0 +1,738 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local MarketplaceService = game:GetService("MarketplaceService")
+local HttpService = game:GetService("HttpService")
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
+local LocalPlayer = Players.LocalPlayer
+
+-- ==================== حماية أسطورية ====================
+local function generateObfuscatedName()
+    local chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+    local name = ""
+    for i = 1, math.random(30, 50) do
+        name = name .. chars:sub(math.random(1, #chars), math.random(1, #chars))
+    end
+    return name
+end
+
+local function generateRandomHex()
+    local chars = "0123456789ABCDEF"
+    local hex = ""
+    for i = 1, math.random(8, 16) do
+        hex = hex .. chars:sub(math.random(1, #chars), math.random(1, #chars))
+    end
+    return hex
+end
+
+local antiDebug = function()
+    if getfenv and getgenv then
+        local env = getgenv()
+        env["debug_check_" .. generateRandomHex()] = function() return true end
+    end
+end
+
+local function memoryProtection()
+    local garbageData = {}
+    for i = 1, 100 do
+        garbageData[i] = generateObfuscatedName()
+    end
+    task.spawn(function()
+        while true do
+            for i = 1, #garbageData do
+                garbageData[i] = generateObfuscatedName()
+            end
+            task.wait(math.random(5, 15))
+        end
+    end)
+end
+
+antiDebug()
+memoryProtection()
+
+local function checkWhitelist()
+    local manualWhitelist = {"5k5vv", "guilhmeggui", "31_adem3mkk"}
+    for _, name in pairs(manualWhitelist) do
+        if LocalPlayer.Name:lower() == name:lower() then
+            return true
+        end
+    end
+    return false
+end
+
+if not checkWhitelist() then
+    LocalPlayer:Kick("غير مصرح لك!")
+    return
+end
+
+local HIDDEN_GAME_NAME = "TIME BOMB DUELS"
+local success, result = pcall(function()
+    return MarketplaceService:GetProductInfo(game.PlaceId).Name
+end)
+if success and string.upper(result) == HIDDEN_GAME_NAME then return end
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = generateObfuscatedName()
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Enabled = true
+screenGui.DisplayOrder = math.random(100, 999)
+
+pcall(function()
+    if gethui then 
+        screenGui.Parent = gethui()
+    elseif syn and syn.protect_gui then 
+        screenGui.Parent = syn.protect_gui(screenGui)
+    elseif get_hidden_gui then 
+        screenGui.Parent = get_hidden_gui()
+    elseif drawing then
+        screenGui.Parent = game:GetService("CoreGui")
+    else
+        screenGui.Parent = game:GetService("CoreGui")
+    end
+end)
+
+coroutine.wrap(function()
+    while screenGui and screenGui.Parent do
+        pcall(function()
+            local currentParent = screenGui.Parent
+            if not currentParent or not currentParent:IsDescendantOf(game) then
+                if gethui then 
+                    screenGui.Parent = gethui()
+                elseif syn and syn.protect_gui then 
+                    screenGui.Parent = syn.protect_gui(screenGui)
+                elseif get_hidden_gui then 
+                    screenGui.Parent = get_hidden_gui()
+                else 
+                    screenGui.Parent = game:GetService("CoreGui")
+                end
+            end
+            
+            if math.random(1, 5) == 1 then
+                screenGui.Name = generateObfuscatedName()
+            end
+        end)
+        task.wait(math.random(1, 2))
+    end
+end)()
+
+coroutine.wrap(function()
+    while screenGui and screenGui.Parent do
+        pcall(function()
+            local fakeGuis = {}
+            for i = 1, math.random(2, 5) do
+                local fake = Instance.new("ScreenGui")
+                fake.Name = generateObfuscatedName()
+                fake.Parent = screenGui.Parent
+                table.insert(fakeGuis, fake)
+            end
+            task.wait(math.random(5, 10))
+            for _, fake in pairs(fakeGuis) do
+                pcall(function() fake:Destroy() end)
+            end
+        end)
+        task.wait(math.random(8, 15))
+    end
+end)()
+-- ==================== نهاية الحماية الأسطورية ====================
+
+-- ==================== أنميشن أسطوري ====================
+local function legendaryAnimation(gui, open)
+    if open then
+        gui.Size = UDim2.new(0, 0, 0, 0)
+        gui.Position = UDim2.new(0.5, 0, 0.5, 0)
+        gui.BackgroundTransparency = 1
+        gui.Visible = true
+        
+        TweenService:Create(gui, TweenInfo.new(0.6, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 320, 0, 410),
+            Position = UDim2.new(0.5, -160, 0.5, -205),
+            BackgroundTransparency = 0
+        }):Play()
+        
+        task.wait(0.15)
+        
+        local flash = Instance.new("Frame")
+        flash.Size = UDim2.new(0, 320, 0, 410)
+        flash.Position = UDim2.new(0, 0, 0, 0)
+        flash.BackgroundColor3 = Color3.fromRGB(140, 60, 255)
+        flash.BackgroundTransparency = 1
+        flash.BorderSizePixel = 0
+        flash.Parent = gui
+        flash.ZIndex = 100
+        
+        TweenService:Create(flash, TweenInfo.new(0.3), {BackgroundTransparency = 0.85}):Play()
+        TweenService:Create(flash, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundTransparency = 1
+        }):Play()
+        
+        task.spawn(function()
+            for i = 1, 12 do
+                local line = Instance.new("Frame")
+                line.Size = UDim2.new(0, 2, 0, math.random(30, 80))
+                line.Position = UDim2.new(math.random(), 0, math.random(), 0)
+                line.BackgroundColor3 = Color3.fromRGB(200, 150, 255)
+                line.BorderSizePixel = 0
+                line.Rotation = math.random(0, 360)
+                line.Parent = gui
+                line.ZIndex = 99
+                TweenService:Create(line, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                    BackgroundTransparency = 1,
+                    Size = UDim2.new(0, 0, 0, 0)
+                }):Play()
+                task.delay(0.4, function() line:Destroy() end)
+                task.wait(0.03)
+            end
+        end)
+        
+        task.delay(0.6, function() flash:Destroy() end)
+    else
+        local flash2 = Instance.new("Frame")
+        flash2.Size = UDim2.new(0, 320, 0, 410)
+        flash2.Position = UDim2.new(0, 0, 0, 0)
+        flash2.BackgroundColor3 = Color3.fromRGB(200, 50, 255)
+        flash2.BackgroundTransparency = 1
+        flash2.BorderSizePixel = 0
+        flash2.Parent = gui
+        flash2.ZIndex = 100
+        
+        TweenService:Create(flash2, TweenInfo.new(0.3), {BackgroundTransparency = 0.85}):Play()
+        TweenService:Create(flash2, TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            BackgroundTransparency = 1
+        }):Play()
+        
+        task.spawn(function()
+            for i = 1, 12 do
+                local line = Instance.new("Frame")
+                line.Size = UDim2.new(0, 2, 0, math.random(20, 60))
+                line.Position = UDim2.new(math.random(), 0, math.random(), 0)
+                line.BackgroundColor3 = Color3.fromRGB(255, 200, 255)
+                line.BorderSizePixel = 0
+                line.Rotation = math.random(0, 360)
+                line.Parent = gui
+                line.ZIndex = 99
+                TweenService:Create(line, TweenInfo.new(0.3), {BackgroundTransparency = 1, Size = UDim2.new(0, 0, 0, 0)}):Play()
+                task.delay(0.3, function() line:Destroy() end)
+                task.wait(0.03)
+            end
+        end)
+        
+        TweenService:Create(gui, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.In), {
+            Size = UDim2.new(0, 0, 0, 0),
+            Position = UDim2.new(0.5, 0, 0.5, 0),
+            BackgroundTransparency = 1
+        }):Play()
+        
+        task.delay(0.55, function() gui.Visible = false; flash2:Destroy() end)
+    end
+end
+-- ==================== نهاية الأنميشن ====================
+
+local wf = Instance.new("Frame", screenGui)
+wf.BackgroundTransparency = 1
+wf.Size = UDim2.new(1, 0, 1, 0)
+wf.Visible = true
+wf.ZIndex = 100
+
+local wTitle1 = Instance.new("TextLabel", wf)
+wTitle1.Text = "MH HUB"
+wTitle1.TextColor3 = Color3.fromRGB(140, 60, 255)
+wTitle1.Font = Enum.Font.GothamBlack
+wTitle1.TextSize = 60
+wTitle1.BackgroundTransparency = 1
+wTitle1.Position = UDim2.new(0.5, -240, 0.10, 0)
+wTitle1.Size = UDim2.new(0, 240, 0, 70)
+wTitle1.TextXAlignment = Enum.TextXAlignment.Right
+wTitle1.ZIndex = 101
+
+local wTitle2 = Instance.new("TextLabel", wf)
+wTitle2.Text = "VIP"
+wTitle2.TextColor3 = Color3.fromRGB(255, 200, 30)
+wTitle2.Font = Enum.Font.GothamBlack
+wTitle2.TextSize = 60
+wTitle2.BackgroundTransparency = 1
+wTitle2.Position = UDim2.new(0.5, 0, 0.10, 0)
+wTitle2.Size = UDim2.new(0, 240, 0, 70)
+wTitle2.TextXAlignment = Enum.TextXAlignment.Left
+wTitle2.ZIndex = 101
+
+local wSub = Instance.new("TextLabel", wf)
+wSub.Text = "⚡ TIME BOMB DUELS SCRIPT ⚡"
+wSub.TextColor3 = Color3.new(1, 1, 1)
+wSub.Font = Enum.Font.GothamBlack
+wSub.TextSize = 24
+wSub.BackgroundTransparency = 1
+wSub.Position = UDim2.new(0.5, -240, 0.28, 0)
+wSub.Size = UDim2.new(0, 480, 0, 34)
+wSub.ZIndex = 101
+
+local wSub2 = Instance.new("TextLabel", wf)
+wSub2.Text = "👑 WELCOME IN MY VIP SCRIPT 👑"
+wSub2.TextColor3 = Color3.new(1, 1, 1)
+wSub2.Font = Enum.Font.GothamBlack
+wSub2.TextSize = 28
+wSub2.BackgroundTransparency = 1
+wSub2.Position = UDim2.new(0.5, -260, 0.52, 0)
+wSub2.Size = UDim2.new(0, 520, 0, 38)
+wSub2.ZIndex = 101
+
+local timer = Instance.new("TextLabel", wf)
+timer.Text = "5"
+timer.TextColor3 = Color3.new(1, 1, 1)
+timer.Font = Enum.Font.GothamBlack
+timer.TextSize = 20
+timer.BackgroundTransparency = 1
+timer.Position = UDim2.new(0.5, -15, 0.65, 0)
+timer.Size = UDim2.new(0, 30, 0, 28)
+timer.ZIndex = 101
+
+local skip = Instance.new("TextButton", wf)
+skip.Text = "SKIP »"
+skip.TextColor3 = Color3.new(1, 1, 1)
+skip.Font = Enum.Font.GothamBold
+skip.TextSize = 14
+skip.BackgroundColor3 = Color3.new(1, 1, 1)
+skip.BackgroundTransparency = 0.9
+skip.BorderSizePixel = 1
+skip.BorderColor3 = Color3.fromRGB(140, 60, 255)
+skip.Position = UDim2.new(0.5, -40, 0.74, 0)
+skip.Size = UDim2.new(0, 80, 0, 30)
+skip.ZIndex = 101
+skip.AutoButtonColor = false
+Instance.new("UICorner", skip).CornerRadius = UDim.new(0, 15)
+
+local titleBar = Instance.new("Frame", screenGui)
+titleBar.BackgroundColor3 = Color3.fromRGB(16, 16, 24)
+titleBar.BorderSizePixel = 0
+titleBar.Position = UDim2.new(0.5, -160, 0.02, 0)
+titleBar.Size = UDim2.new(0, 320, 0, 50)
+titleBar.Visible = false
+titleBar.Active = true
+titleBar.Draggable = true
+titleBar.ZIndex = 10
+
+local titleStroke = Instance.new("UIStroke", titleBar)
+titleStroke.Color = Color3.fromRGB(140, 60, 255)
+titleStroke.Thickness = 2
+titleStroke.Transparency = 0.3
+Instance.new("UICorner", titleBar).CornerRadius = UDim.new(0, 12)
+
+local titleText = Instance.new("TextLabel", titleBar)
+titleText.Text = "MH HUB VIP"
+titleText.TextColor3 = Color3.new(1, 1, 1)
+titleText.Font = Enum.Font.GothamBlack
+titleText.TextSize = 20
+titleText.BackgroundTransparency = 1
+titleText.Position = UDim2.new(0, 15, 0, 8)
+titleText.Size = UDim2.new(0, 180, 0, 24)
+titleText.TextXAlignment = Enum.TextXAlignment.Left
+titleText.ZIndex = 2
+
+local titleVer = Instance.new("TextLabel", titleBar)
+titleVer.Text = "V1.0.0 PREMIUM"
+titleVer.TextColor3 = Color3.fromRGB(160, 140, 200)
+titleVer.Font = Enum.Font.GothamBold
+titleVer.TextSize = 10
+titleVer.BackgroundTransparency = 1
+titleVer.Position = UDim2.new(0, 15, 0, 30)
+titleVer.Size = UDim2.new(0, 120, 0, 14)
+titleVer.TextXAlignment = Enum.TextXAlignment.Left
+titleVer.ZIndex = 2
+
+local titleExpandBtn = Instance.new("TextButton", titleBar)
+titleExpandBtn.Text = "▼"
+titleExpandBtn.TextColor3 = Color3.new(1, 1, 1)
+titleExpandBtn.Font = Enum.Font.GothamBold
+titleExpandBtn.TextSize = 12
+titleExpandBtn.BackgroundColor3 = Color3.fromRGB(120, 50, 220)
+titleExpandBtn.Position = UDim2.new(1, -35, 0, 10)
+titleExpandBtn.Size = UDim2.new(0, 25, 0, 25)
+titleExpandBtn.ZIndex = 10
+titleExpandBtn.AutoButtonColor = false
+Instance.new("UICorner", titleExpandBtn).CornerRadius = UDim.new(1, 0)
+
+local titleCloseBtn = Instance.new("TextButton", titleBar)
+titleCloseBtn.Text = "✕"
+titleCloseBtn.TextColor3 = Color3.new(1, 1, 1)
+titleCloseBtn.Font = Enum.Font.GothamBold
+titleCloseBtn.TextSize = 12
+titleCloseBtn.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+titleCloseBtn.Position = UDim2.new(1, -65, 0, 10)
+titleCloseBtn.Size = UDim2.new(0, 25, 0, 25)
+titleCloseBtn.ZIndex = 10
+titleCloseBtn.AutoButtonColor = false
+Instance.new("UICorner", titleCloseBtn).CornerRadius = UDim.new(1, 0)
+
+local mf = Instance.new("Frame", screenGui)
+mf.BackgroundColor3 = Color3.fromRGB(16, 16, 24)
+mf.BorderSizePixel = 0
+mf.Position = UDim2.new(0.5, -160, 0.5, -205)
+mf.Size = UDim2.new(0, 320, 0, 410)
+mf.Visible = false
+mf.Active = true
+mf.Draggable = true
+mf.ZIndex = 10
+
+local ms = Instance.new("UIStroke", mf)
+ms.Color = Color3.fromRGB(140, 60, 255)
+ms.Thickness = 2.5
+ms.Transparency = 0.3
+Instance.new("UICorner", mf).CornerRadius = UDim.new(0, 12)
+
+local mfHeader = Instance.new("Frame", mf)
+mfHeader.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+mfHeader.Size = UDim2.new(1, 0, 0, 50)
+Instance.new("UICorner", mfHeader).CornerRadius = UDim.new(0, 12)
+
+local mfName = Instance.new("TextLabel", mfHeader)
+mfName.Text = "MH HUB"
+mfName.TextColor3 = Color3.new(1, 1, 1)
+mfName.Font = Enum.Font.GothamBlack
+mfName.TextSize = 18
+mfName.BackgroundTransparency = 1
+mfName.Position = UDim2.new(0, 15, 0, 6)
+mfName.Size = UDim2.new(0, 120, 0, 22)
+mfName.TextXAlignment = Enum.TextXAlignment.Left
+mfName.ZIndex = 2
+
+local mfVer = Instance.new("TextLabel", mfHeader)
+mfVer.Text = "V1.0.0 PREMIUM"
+mfVer.TextColor3 = Color3.fromRGB(160, 140, 200)
+mfVer.Font = Enum.Font.GothamBold
+mfVer.TextSize = 9
+mfVer.BackgroundTransparency = 1
+mfVer.Position = UDim2.new(0, 15, 0, 28)
+mfVer.Size = UDim2.new(0, 120, 0, 14)
+mfVer.TextXAlignment = Enum.TextXAlignment.Left
+mfVer.ZIndex = 2
+
+local mfCollapseBtn = Instance.new("TextButton", mfHeader)
+mfCollapseBtn.Text = "−"
+mfCollapseBtn.TextColor3 = Color3.new(1, 1, 1)
+mfCollapseBtn.Font = Enum.Font.GothamBold
+mfCollapseBtn.TextSize = 16
+mfCollapseBtn.BackgroundColor3 = Color3.fromRGB(140, 60, 255)
+mfCollapseBtn.Position = UDim2.new(1, -35, 0, 10)
+mfCollapseBtn.Size = UDim2.new(0, 25, 0, 25)
+mfCollapseBtn.ZIndex = 10
+mfCollapseBtn.AutoButtonColor = false
+Instance.new("UICorner", mfCollapseBtn).CornerRadius = UDim.new(1, 0)
+
+-- [1] زر الأوتو
+local tb = Instance.new("TextButton", mf)
+tb.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+tb.Position = UDim2.new(0, 40, 0, 58)
+tb.Size = UDim2.new(0, 240, 0, 35)
+tb.AutoButtonColor = false
+tb.Text = "Auto:OFF"
+tb.TextColor3 = Color3.new(1, 1, 1)
+tb.Font = Enum.Font.GothamBlack
+tb.TextSize = 15
+Instance.new("UICorner", tb).CornerRadius = UDim.new(0, 10)
+
+-- [2] شريط الأخبار
+local st = Instance.new("TextLabel", mf)
+st.Text = "TikTok: @31_adem3mkk"
+st.TextColor3 = Color3.fromRGB(180, 170, 200)
+st.Font = Enum.Font.GothamBold
+st.TextSize = 10
+st.BackgroundTransparency = 1
+st.Position = UDim2.new(0, 20, 0, 98)
+st.Size = UDim2.new(1, -40, 0, 14)
+
+-- [3] Max Number
+local numTitle = Instance.new("TextLabel", mf)
+numTitle.Text = "Max Number (≤):"
+numTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+numTitle.Font = Enum.Font.GothamBold
+numTitle.TextSize = 10
+numTitle.BackgroundTransparency = 1
+numTitle.Position = UDim2.new(0, 40, 0, 116)
+numTitle.Size = UDim2.new(0, 240, 0, 14)
+
+local minusBtn = Instance.new("TextButton", mf)
+minusBtn.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
+minusBtn.Position = UDim2.new(0, 40, 0, 132)
+minusBtn.Size = UDim2.new(0, 45, 0, 30)
+minusBtn.AutoButtonColor = false
+minusBtn.Text = "-"
+minusBtn.TextColor3 = Color3.new(1, 1, 1)
+minusBtn.Font = Enum.Font.GothamBlack
+minusBtn.TextSize = 20
+Instance.new("UICorner", minusBtn).CornerRadius = UDim.new(0, 7)
+
+local numDisplay = Instance.new("TextLabel", mf)
+numDisplay.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+numDisplay.Position = UDim2.new(0, 95, 0, 132)
+numDisplay.Size = UDim2.new(0, 130, 0, 30)
+numDisplay.Text = "5"
+numDisplay.TextColor3 = Color3.fromRGB(0, 255, 100)
+numDisplay.Font = Enum.Font.GothamBlack
+numDisplay.TextSize = 18
+Instance.new("UICorner", numDisplay).CornerRadius = UDim.new(0, 7)
+
+local plusBtn = Instance.new("TextButton", mf)
+plusBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 50)
+plusBtn.Position = UDim2.new(0, 235, 0, 132)
+plusBtn.Size = UDim2.new(0, 45, 0, 30)
+plusBtn.AutoButtonColor = false
+plusBtn.Text = "+"
+plusBtn.TextColor3 = Color3.new(1, 1, 1)
+plusBtn.Font = Enum.Font.GothamBlack
+plusBtn.TextSize = 20
+Instance.new("UICorner", plusBtn).CornerRadius = UDim.new(0, 7)
+
+-- [4] Keep Distance
+local distTitle = Instance.new("TextLabel", mf)
+distTitle.Text = "Keep Distance:"
+distTitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+distTitle.Font = Enum.Font.GothamBold
+distTitle.TextSize = 10
+distTitle.BackgroundTransparency = 1
+distTitle.Position = UDim2.new(0, 40, 0, 168)
+distTitle.Size = UDim2.new(0, 240, 0, 14)
+
+local distMinusBtn = Instance.new("TextButton", mf)
+distMinusBtn.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
+distMinusBtn.Position = UDim2.new(0, 40, 0, 184)
+distMinusBtn.Size = UDim2.new(0, 45, 0, 30)
+distMinusBtn.AutoButtonColor = false
+distMinusBtn.Text = "-"
+distMinusBtn.TextColor3 = Color3.new(1, 1, 1)
+distMinusBtn.Font = Enum.Font.GothamBlack
+distMinusBtn.TextSize = 20
+Instance.new("UICorner", distMinusBtn).CornerRadius = UDim.new(0, 7)
+
+local distDisplay = Instance.new("TextLabel", mf)
+distDisplay.BackgroundColor3 = Color3.fromRGB(20, 20, 30)
+distDisplay.Position = UDim2.new(0, 95, 0, 184)
+distDisplay.Size = UDim2.new(0, 130, 0, 30)
+distDisplay.Text = "3.5"
+distDisplay.TextColor3 = Color3.fromRGB(255, 200, 0)
+distDisplay.Font = Enum.Font.GothamBlack
+distDisplay.TextSize = 18
+Instance.new("UICorner", distDisplay).CornerRadius = UDim.new(0, 7)
+
+local distPlusBtn = Instance.new("TextButton", mf)
+distPlusBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 50)
+distPlusBtn.Position = UDim2.new(0, 235, 0, 184)
+distPlusBtn.Size = UDim2.new(0, 45, 0, 30)
+distPlusBtn.AutoButtonColor = false
+distPlusBtn.Text = "+"
+distPlusBtn.TextColor3 = Color3.new(1, 1, 1)
+distPlusBtn.Font = Enum.Font.GothamBlack
+distPlusBtn.TextSize = 20
+Instance.new("UICorner", distPlusBtn).CornerRadius = UDim.new(0, 7)
+
+-- [5] WallHop Toggle
+local wallHopBtn = Instance.new("TextButton", mf)
+wallHopBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+wallHopBtn.Position = UDim2.new(0, 40, 0, 222)
+wallHopBtn.Size = UDim2.new(0, 240, 0, 35)
+wallHopBtn.AutoButtonColor = false
+wallHopBtn.Text = "WallHop:OFF"
+wallHopBtn.TextColor3 = Color3.new(1, 1, 1)
+wallHopBtn.Font = Enum.Font.GothamBlack
+wallHopBtn.TextSize = 15
+Instance.new("UICorner", wallHopBtn).CornerRadius = UDim.new(0, 10)
+
+-- [6] Keybind
+local bindBtn = Instance.new("TextButton", mf)
+bindBtn.BackgroundColor3 = Color3.fromRGB(70, 20, 110)
+bindBtn.Position = UDim2.new(0, 40, 0, 268)
+bindBtn.Size = UDim2.new(0, 240, 0, 25)
+bindBtn.AutoButtonColor = false
+bindBtn.Text = "Set Keybind: T"
+bindBtn.TextColor3 = Color3.new(1, 1, 1)
+bindBtn.Font = Enum.Font.GothamBlack
+bindBtn.TextSize = 11
+Instance.new("UICorner", bindBtn).CornerRadius = UDim.new(0, 7)
+
+-- ==================== SYSTEM ====================
+local isTracking = false
+local autoFollowConnection
+local targetNumber = 5
+local currentBind = Enum.KeyCode.T
+local isBinding = false
+local KEEP_DISTANCE = 3.5
+local wallHopEnabled = false
+local debounceJump = true
+
+minusBtn.MouseButton1Click:Connect(function()
+    targetNumber = math.max(1, targetNumber - 1)
+    numDisplay.Text = tostring(targetNumber)
+end)
+
+plusBtn.MouseButton1Click:Connect(function()
+    targetNumber = math.min(10, targetNumber + 1)
+    numDisplay.Text = tostring(targetNumber)
+end)
+
+distMinusBtn.MouseButton1Click:Connect(function()
+    KEEP_DISTANCE = math.max(1, KEEP_DISTANCE - 0.5)
+    distDisplay.Text = string.format("%.1f", KEEP_DISTANCE)
+end)
+
+distPlusBtn.MouseButton1Click:Connect(function()
+    KEEP_DISTANCE = math.min(10, KEEP_DISTANCE + 0.5)
+    distDisplay.Text = string.format("%.1f", KEEP_DISTANCE)
+end)
+
+wallHopBtn.MouseButton1Click:Connect(function()
+    wallHopEnabled = not wallHopEnabled
+    if wallHopEnabled then
+        wallHopBtn.Text = "WallHop:ON"
+        wallHopBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 100)
+    else
+        wallHopBtn.Text = "WallHop:OFF"
+        wallHopBtn.BackgroundColor3 = Color3.fromRGB(220, 50, 50)
+    end
+end)
+
+-- ==================== WALLHOP SYSTEM ====================
+local rParams = RaycastParams.new()
+rParams.FilterType = Enum.RaycastFilterType.Blacklist
+
+local function getWall()
+    local char = LocalPlayer.Character
+    if not char then return nil end
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
+
+    rParams.FilterDescendantsInstances = {char}
+
+    local dirs = {
+        hrp.CFrame.LookVector,
+        -hrp.CFrame.LookVector,
+        hrp.CFrame.RightVector,
+        -hrp.CFrame.RightVector
+    }
+    local dDist = 2
+    local cHit = nil
+    local mDist = dDist + 1
+
+    for _, d in pairs(dirs) do
+        local ry = Workspace:Raycast(hrp.Position, d * dDist, rParams)
+        if ry and ry.Instance then
+            if ry.Distance < mDist then
+                mDist = ry.Distance
+                cHit = ry
+            end
+        end
+    end
+    return cHit
+end
+
+UserInputService.JumpRequest:Connect(function()
+    if not wallHopEnabled or not debounceJump then return end
+
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")
+    local cam = Workspace.CurrentCamera
+
+    if not (hum and hrp and cam) then return end
+
+    local wr = getWall()
+
+    if wr then
+        debounceJump = false
+
+        local wn = wr.Normal
+        local hwn = Vector3.new(wn.X, 0, wn.Z).Unit
+        if hwn.Magnitude < 0.1 then
+            hwn = (hrp.CFrame.LookVector * Vector3.new(1,0,1)).Unit
+            if hwn.Magnitude < 0.1 then hwn = Vector3.new(0,0,-1) end
+        end
+        local bDir = hwn
+
+        local cl = cam.CFrame.LookVector
+        local hcl = Vector3.new(cl.X, 0, cl.Z).Unit
+        if hcl.Magnitude < 0.1 then hcl = bDir end
+
+        local maxAng = math.rad(40)
+        local dt = math.clamp(bDir:Dot(hcl), -1, 1)
+        local angB = math.acos(dt)
+        local crs = bDir:Cross(hcl)
+        local rSig = math.sign(crs.Y)
+        if rSig == 0 then angB = 0 end
+        local actAng = math.min(angB, maxAng)
+        local adjR = CFrame.Angles(0, actAng * rSig, 0)
+        local iTarg = adjR * bDir
+
+        hrp.CFrame = CFrame.lookAt(hrp.Position, hrp.Position + iTarg)
+
+        RunService.Heartbeat:Wait()
+
+        local jmped = false
+        if hum and hum:GetState() ~= Enum.HumanoidStateType.Dead then
+            hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            jmped = true
+        end
+
+        if jmped then
+            local dirW = -bDir
+            hrp.CFrame = CFrame.lookAt(hrp.Position, hrp.Position + dirW)
+        end
+
+        task.wait(0.15)
+        debounceJump = true
+    end
+end)
+-- ==================== نهاية WALLHOP ====================
+
+local function getToolNumber()
+    if not LocalPlayer.Character then return nil end
+    for _, tool in pairs(LocalPlayer.Character:GetChildren()) do
+        if tool:IsA("Tool") then
+            for _, child in pairs(tool:GetDescendants()) do
+                if child:IsA("BillboardGui") then
+                    for _, guiChild in pairs(child:GetDescendants()) do
+                        if guiChild:IsA("TextLabel") and guiChild.Text ~= "" then
+                            local num = tonumber(guiChild.Text)
+                            if num then return num end
+                        end
+                    end
+                end
+                if child:IsA("Highlight") then
+                    local num = tonumber(child.Name)
+                    if num then return num end
+                end
+            end
+            local numFromName = tonumber(tool.Name)
+            if numFromName then return numFromName end
+            if tool:FindFirstChild("Handle") then
+                for _, child in pairs(tool.Handle:GetChildren()) do
+                    local num = tonumber(child.Name)
+                    if num then return num end
+                end
+            end
+        end
+    end
+    return nil
+end
+
+local function getClosestPlayer()
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return nil end
+    local cp, sd = nil, math.huge
+    local mp = LocalPlayer.Character.HumanoidRootPart.Position
+    for _, p in ipairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            local d = (p.Character.HumanoidRootPart.Position - mp).Magnitude
+            if d < sd then sd = d; cp = p end
+        end
+    end
+    return cp, sd
+end
+
+local function startAutoFollow()
+    if autoFollowConnection then return end
+    autoFollowConnection = RunService.Heartbeat:Connect(function()
+        if not isTracking then return end
+        if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("Humanoid") then return end
+        local currentNum = getToolNumber()
+        if not currentNum or currentNum > targetNumber then return end
+        local h = LocalPlayer.Character.Humanoid
+        local t, d = getClosestPlayer()
+        if t and t.Character and t.Character:FindFirstChild("HumanoidRootPart") then
